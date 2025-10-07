@@ -1,9 +1,10 @@
 package mysql
 
 import (
+	"time"
+
 	"database/sql"
 	"mediahub/pkg/config"
-	"time"
 )
 
 var db *sql.DB
