@@ -30,6 +30,15 @@ type Config struct {
 	} `mapstructure:"log"`
 	ShortDomain     string
 	UserShortDomain string
+	DependOn        struct {
+		ShortUrl struct {
+			Address     string
+			AccessToken string
+		}
+		User struct {
+			Address string
+		}
+	}
 }
 
 var conf *Config
