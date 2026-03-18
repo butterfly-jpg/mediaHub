@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package shorturl;
+
+option go_package = "mediahub/services/shorturl/proto";
+
+// ShortUrl 短链接服务
+service ShortUrl {
+  // GetShortUrl 根据原始 URL 生成短链接
+  rpc GetShortUrl(GetShortUrlRequest) returns (GetShortUrlResponse);
+
+  // GetOriginalUrl 根据短链接还原原始 URL
+  rpc GetOriginalUrl(GetOriginalUrlRequest) returns (GetOriginalUrlResponse);
+}
+
+// GetShortUrlRequest 生成短链接请求
+message GetShortUrlRequest {
+  string original_url = 1; // 原始 URL
+}
+
+// GetShortUrlResponse 生成短链接响应
+message GetShortUrlResponse {
+  string short_url = 1; // 生成的短链接
+}
+
+// GetOriginalUrlRequest 还原原始 URL 请求
+message GetOriginalUrlRequest {
+  string short_url = 1; // 短链接
+}
+
+// GetOriginalUrlResponse 还原原始 URL 响应
+message GetOriginalUrlResponse {
+  string original_url = 1; // 原始 URL
+}

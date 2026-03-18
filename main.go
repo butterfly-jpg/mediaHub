@@ -2,11 +2,15 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"log"
+	"mediahub/controller"
+	"mediahub/middleware"
 	"mediahub/pkg/config"
-	"mediahub/pkg/storage/oss"
+	"mediahub/pkg/storage/cos"
+	"mediahub/routers"
+	"mediahub/services/shorturl"
 	"net/http"
-
-	"mediahub/todo"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,25 +25,31 @@ func main() {
 	// 初始化配置文件
 	config.InitConfig(*configFile)
 	cnf := config.GetConfig()
-	// 初始化oss
-	os := oss.NewOssStorage(cnf.OSS.BucketName, cnf.OSS.OssAccessKeyID, cnf.OSS.OssAccessKeySecret, cnf.OSS.RegionId)
-	
+	shorturl.Init()
+	// 初始化cos
+	os := cos.NewCosStorage(cnf.Cos.BucketUrl, cnf.Cos.SecretId, cnf.Cos.SecretKey, cnf.Cos.CDNDomain)
+	c := controller.NewController(os)
+
+	// 启动应用程序
+	gin.SetMode(cnf.Server.Mode)
 	r := gin.Default()
+	r.Use(middleware.Cors(), middleware.Auth())
+	// 注册了一个/health健康检测接口，用于监控存活
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
+	api := r.Group("/api")
+	routers.InitRouters(api, c)
 
-	// Serve frontend
-	r.StaticFS("/static", http.Dir("./static"))
+	fs := http.FileServer(http.Dir("www"))
+	r.NoRoute(func(c *gin.Context) {
+		fs.ServeHTTP(c.Writer, c.Request)
+	})
 	r.GET("/", func(c *gin.Context) {
-		c.File("./static/index.html")
+		http.ServeFile(c.Writer, c.Request, "www/index.html")
 	})
 
-	// Health check
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
-	})
-
-	// Todo API
-	api := r.Group("/api/v1/todos")
-	todo.RegisterRoutes(api)
-
-	r.Run(":8080")
+	if err := r.Run(fmt.Sprintf("%s:%d", cnf.Server.IP, cnf.Server.Port)); err != nil {
+		log.Fatal(err)
+	}
 }

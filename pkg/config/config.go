@@ -9,42 +9,40 @@ import (
 
 type Config struct {
 	Server struct {
-		IP          string `mapstructure:"ip"`
-		Port        int    `mapstructure:"port"`
-		AccessToken string
+		IP   string `mapstructure:"ip"`
+		Port int    `mapstructure:"port"`
+		Mode string `mapstructure:"mode"`
 	} `mapstructure:"server"`
 	Redis struct {
-		Host string
-		Port int
+		Host string `mapstructure:"host"`
+		Port int    `mapstructure:"port"`
 		Pwd  string `mapstructure:"pwd"`
 	}
 	Mysql struct {
 		DSN         string `mapstructure:"dsn"`
-		MaxLifeTime int
-		MaxOpenConn int
-		MaxIdleConn int
+		MaxLifeTime int    `mapstructure:"maxLifeTime"`
+		MaxOpenConn int    `mapstructure:"maxOpenConn"`
+		MaxIdleConn int    `mapstructure:"maxIdleConn"`
 	}
 	Log struct {
-		Level   string
+		Level   string `mapstructure:"level"`
 		LogPath string `mapstructure:"logPath"`
 	} `mapstructure:"log"`
-	OSS struct {
-		BucketName         string `mapstructure:"bucketName"`
-		OssAccessKeyID     string `mapstructure:"ossAccessKeyId"`
-		OssAccessKeySecret string `mapstructure:"ossAccessKeySecret"`
-		RegionId           string `mapstructure:"regionId"`
-	} `mapstructure:"oss"`
-	ShortDomain     string
-	UserShortDomain string
-	DependOn        struct {
+	Cos struct {
+		SecretId  string `mapstructure:"secretId"`
+		SecretKey string `mapstructure:"secretKey"`
+		CDNDomain string `mapstructure:"cdnDomain"`
+		BucketUrl string `mapstructure:"bucketUrl"`
+	} `mapstructure:"cos"`
+	DependOn struct {
 		ShortUrl struct {
-			Address     string
-			AccessToken string
-		}
+			Address     string `mapstructure:"address"`
+			AccessToken string `mapstructure:"accessToken"`
+		} `mapstructure:"shortUrl"`
 		User struct {
-			Address string
-		}
-	}
+			Address string `mapstructure:"address"`
+		} `mapstructure:"user"`
+	} `mapstructure:"dependOn"`
 }
 
 var conf *Config

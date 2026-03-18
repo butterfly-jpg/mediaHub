@@ -138,7 +138,7 @@ type Storage interface {
     Upload(ctx context.Context, key string, r io.Reader) error
 }
 
-// pkg/storage/oss/oss.go
+// pkg/storage/cos/cos.go
 type OssStorage struct { ... }
 func (o *OssStorage) Upload(...) error { ... }
 ```
