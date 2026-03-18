@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Auth 授权验证
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 1. 从请求头中获取token

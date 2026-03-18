@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #0d0d1a;
+      background-image:
+        radial-gradient(ellipse at 15% 15%, rgba(139,92,246,.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 80%, rgba(59,130,246,.12) 0%, transparent 55%);
+      color: #f1f5f9;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    .wrap { max-width: 680px; margin: 0 auto; padding: 2.5rem 1rem 4rem; }
+
+    /* ── Header ── */
+    h1 {
+      font-size: 2.4rem; font-weight: 800; text-align: center;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa, #34d399);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: .4rem;
+    }
+    .subtitle { text-align: center; color: #64748b; font-size: .9rem; margin-bottom: 2rem; }
+
+    /* ── Glass card ── */
+    .card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      backdrop-filter: blur(12px);
+    }
+
+    /* ── Stats bar ── */
+    .stats { display: flex; gap: .75rem; margin-bottom: 1.25rem; }
+    .stat { flex: 1; text-align: center; background: rgba(255,255,255,.03); border-radius: .75rem; padding: .6rem .25rem; }
+    .stat-n { font-size: 1.5rem; font-weight: 700; }
+    .stat-l { font-size: .65rem; color: #64748b; text-transform: uppercase; letter-spacing: .8px; }
+    .prog-bar { height: 5px; background: rgba(255,255,255,.08); border-radius: 3px; overflow: hidden; margin-bottom: 1.25rem; }
+    .prog-fill { height: 100%; background: linear-gradient(90deg, #a78bfa, #34d399); border-radius: 3px; transition: width .5s ease; box-shadow: 0 0 8px #34d399; }
+
+    /* ── Input area ── */
+    .input-row { display: flex; gap: .6rem; margin-bottom: 1.25rem; }
+    input[type="text"] {
+      flex: 1; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+      border-radius: .75rem; padding: .7rem 1rem; color: #f1f5f9; font-size: .95rem;
+      outline: none; transition: border-color .25s, box-shadow .25s; font-family: inherit;
+    }
+    input[type="text"]:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,.15); }
+    input[type="text"]::placeholder { color: #475569; }
+    .add-btn {
+      padding: .7rem 1.2rem; background: linear-gradient(135deg, #7c3aed, #2563eb);
+      border: none; border-radius: .75rem; color: #fff; font-size: 1.1rem;
+      cursor: pointer; transition: opacity .2s, transform .2s; font-family: inherit;
+    }
+    .add-btn:hover { opacity: .88; transform: translateY(-1px); }
+    .add-btn:active { transform: translateY(0); }
+
+    /* ── Filters ── */
+    .filters { display: flex; gap: .4rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .f-btn {
+      padding: .3rem .85rem; border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04); color: #64748b; border-radius: 2rem;
+      cursor: pointer; font-size: .78rem; font-weight: 500; transition: all .2s; font-family: inherit;
+    }
+    .f-btn:hover { border-color: #a78bfa; color: #f1f5f9; }
+    .f-btn.active { background: rgba(139,92,246,.2); border-color: #a78bfa; color: #f1f5f9; }
+
+    /* ── Todo items ── */
+    .list { display: flex; flex-direction: column; gap: .6rem; }
+    .item {
+      display: flex; align-items: center; gap: .75rem;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 1rem; padding: .9rem 1rem;
+      animation: slide-in .25s ease; transition: border-color .2s, transform .2s;
+    }
+    .item:hover { border-color: rgba(255,255,255,.15); transform: translateX(2px); }
+    .item.done { opacity: .5; }
+    .item.done .item-title { text-decoration: line-through; color: #475569; }
+    @keyframes slide-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fade-out { to { opacity: 0; transform: scale(.95); } }
+    .item.removing { animation: fade-out .25s ease forwards; }
+
+    .check {
+      width: 22px; height: 22px; border: 2px solid rgba(255,255,255,.2); border-radius: 50%;
+      cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      transition: all .25s; font-size: .8rem;
+    }
+    .check:hover { border-color: #a78bfa; }
+    .check.on { background: linear-gradient(135deg, #34d399, #06b6d4); border-color: transparent; }
+
+    .item-title { flex: 1; font-size: .95rem; line-height: 1.4; }
+
+    .del-btn {
+      width: 28px; height: 28px; border: 1px solid rgba(255,255,255,.08);
+      background: transparent; color: #475569; border-radius: .5rem;
+      cursor: pointer; font-size: .8rem; display: flex; align-items: center; justify-content: center;
+      transition: all .2s; flex-shrink: 0; font-family: inherit;
+    }
+    .del-btn:hover { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,.1); }
+
+    .empty { text-align: center; padding: 3rem 1rem; color: #334155; }
+    .empty-icon { font-size: 3rem; margin-bottom: .75rem; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⚡ TaskFlow</h1>
+  <p class="subtitle">保持专注，保持高效</p>
+
+  <!-- Stats -->
+  <div class="card" style="margin-bottom:1.25rem">
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-n" id="sTotal" style="color:#a78bfa">0</div><div class="stat-l">总计</div></div>
+      <div class="stat"><div class="stat-n" id="sPending" style="color:#64748b">0</div><div class="stat-l">待办</div></div>
+      <div class="stat"><div class="stat-n" id="sDone" style="color:#34d399">0</div><div class="stat-l">完成</div></div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="card" style="margin-bottom:1.25rem">
+    <div class="input-row">
+      <input type="text" id="inp" placeholder="添加新任务…" />
+      <button class="add-btn" onclick="add()">＋</button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button class="f-btn active" onclick="setFilter('all',this)">全部</button>
+      <button class="f-btn" onclick="setFilter('pending',this)">待办</button>
+      <button class="f-btn" onclick="setFilter('done',this)">已完成</button>
+    </div>
+
+    <!-- List -->
+    <div class="list" id="list">
+      <div class="empty" id="empty"><div class="empty-icon">✨</div><p>还没有任务，添加一个吧！</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = '/api/v1/todos';
+  let todos = [];
+  let filter = 'all';
+
+  async function load() {
+    const r = await fetch(API);
+    const d = await r.json();
+    todos = d.data || [];
+    render();
+  }
+
+  async function add() {
+    const inp = document.getElementById('inp');
+    const title = inp.value.trim();
+    if (!title) { inp.focus(); inp.style.borderColor = '#ef4444'; setTimeout(() => inp.style.borderColor = '', 1500); return; }
+    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title }) });
+    const d = await r.json();
+    todos.unshift(d.data);
+    inp.value = '';
+    render();
+  }
+
+  async function toggle(id) {
+    const t = todos.find(x => x.id === id);
+    if (!t) return;
+    const next = t.status === 'done' ? 'pending' : 'done';
+    const r = await fetch(`${API}/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: next }) });
+    const d = await r.json();
+    const idx = todos.findIndex(x => x.id === id);
+    if (idx !== -1) todos[idx] = d.data;
+    render();
+  }
+
+  async function del(id) {
+    const el = document.querySelector(`[data-id="${id}"]`);
+    if (el) { el.classList.add('removing'); await new Promise(r => setTimeout(r, 240)); }
+    await fetch(`${API}/${id}`, { method: 'DELETE' });
+    todos = todos.filter(x => x.id !== id);
+    render();
+  }
+
+  function setFilter(f, btn) {
+    filter = f;
+    document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  }
+
+  function render() {
+    const list = document.getElementById('list');
+    const empty = document.getElementById('empty');
+    list.querySelectorAll('.item').forEach(e => e.remove());
+
+    const visible = todos.filter(t => filter === 'all' || t.status === filter);
+    empty.style.display = visible.length ? 'none' : 'block';
+
+    visible.forEach(t => {
+      const div = document.createElement('div');
+      div.className = 'item' + (t.status === 'done' ? ' done' : '');
+      div.dataset.id = t.id;
+      div.innerHTML = `
+        <div class="check ${t.status === 'done' ? 'on' : ''}" onclick="toggle('${t.id}')">${t.status === 'done' ? '✓' : ''}</div>
+        <span class="item-title">${esc(t.title)}</span>
+        <button class="del-btn" onclick="del('${t.id}')">✕</button>`;
+      list.appendChild(div);
+    });
+
+    const total = todos.length, done = todos.filter(t => t.status === 'done').length;
+    document.getElementById('sTotal').textContent = total;
+    document.getElementById('sPending').textContent = total - done;
+    document.getElementById('sDone').textContent = done;
+    document.getElementById('progFill').style.width = total ? `${Math.round(done / total * 100)}%` : '0%';
+  }
+
+  function esc(s) { const d = document.createElement('div'); d.appendChild(document.createTextNode(s)); return d.innerHTML; }
+
+  document.getElementById('inp').addEventListener('keydown', e => { if (e.key === 'Enter') add(); });
+  load();
+</script>
+</body>
+</html>

@@ -28,6 +28,12 @@ type Config struct {
 		Level   string
 		LogPath string `mapstructure:"logPath"`
 	} `mapstructure:"log"`
+	OSS struct {
+		BucketName         string `mapstructure:"bucketName"`
+		OssAccessKeyID     string `mapstructure:"ossAccessKeyId"`
+		OssAccessKeySecret string `mapstructure:"ossAccessKeySecret"`
+		RegionId           string `mapstructure:"regionId"`
+	} `mapstructure:"oss"`
 	ShortDomain     string
 	UserShortDomain string
 	DependOn        struct {
