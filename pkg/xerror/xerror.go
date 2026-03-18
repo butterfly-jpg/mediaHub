@@ -1,5 +1,7 @@
 package xerror
 
+import "errors"
+
 type Error struct {
 	errCode       string
 	errMsg        string
@@ -30,6 +32,11 @@ func NewByErr(err error) error {
 		originalError: err,
 		errMsg:        err.Error(),
 	}
+}
+
+func NewByMsg(msg string) error {
+	err := errors.New(msg)
+	return NewByErr(err)
 }
 
 func (e *Error) GetOriginalError() error {

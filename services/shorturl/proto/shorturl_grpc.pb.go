@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v7.34.0
-// source: services/shorturl/proto/shorturl.proto
+// source: shorturl.proto
 
 package proto
 
@@ -30,9 +30,9 @@ const (
 // ShortUrl 短链接服务
 type ShortUrlClient interface {
 	// GetShortUrl 根据原始 URL 生成短链接
-	GetShortUrl(ctx context.Context, in *GetShortUrlRequest, opts ...grpc.CallOption) (*GetShortUrlResponse, error)
+	GetShortUrl(ctx context.Context, in *Url, opts ...grpc.CallOption) (*Url, error)
 	// GetOriginalUrl 根据短链接还原原始 URL
-	GetOriginalUrl(ctx context.Context, in *GetOriginalUrlRequest, opts ...grpc.CallOption) (*GetOriginalUrlResponse, error)
+	GetOriginalUrl(ctx context.Context, in *ShortKey, opts ...grpc.CallOption) (*Url, error)
 }
 
 type shortUrlClient struct {
@@ -43,9 +43,9 @@ func NewShortUrlClient(cc grpc.ClientConnInterface) ShortUrlClient {
 	return &shortUrlClient{cc}
 }
 
-func (c *shortUrlClient) GetShortUrl(ctx context.Context, in *GetShortUrlRequest, opts ...grpc.CallOption) (*GetShortUrlResponse, error) {
+func (c *shortUrlClient) GetShortUrl(ctx context.Context, in *Url, opts ...grpc.CallOption) (*Url, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetShortUrlResponse)
+	out := new(Url)
 	err := c.cc.Invoke(ctx, ShortUrl_GetShortUrl_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -53,9 +53,9 @@ func (c *shortUrlClient) GetShortUrl(ctx context.Context, in *GetShortUrlRequest
 	return out, nil
 }
 
-func (c *shortUrlClient) GetOriginalUrl(ctx context.Context, in *GetOriginalUrlRequest, opts ...grpc.CallOption) (*GetOriginalUrlResponse, error) {
+func (c *shortUrlClient) GetOriginalUrl(ctx context.Context, in *ShortKey, opts ...grpc.CallOption) (*Url, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetOriginalUrlResponse)
+	out := new(Url)
 	err := c.cc.Invoke(ctx, ShortUrl_GetOriginalUrl_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -70,9 +70,9 @@ func (c *shortUrlClient) GetOriginalUrl(ctx context.Context, in *GetOriginalUrlR
 // ShortUrl 短链接服务
 type ShortUrlServer interface {
 	// GetShortUrl 根据原始 URL 生成短链接
-	GetShortUrl(context.Context, *GetShortUrlRequest) (*GetShortUrlResponse, error)
+	GetShortUrl(context.Context, *Url) (*Url, error)
 	// GetOriginalUrl 根据短链接还原原始 URL
-	GetOriginalUrl(context.Context, *GetOriginalUrlRequest) (*GetOriginalUrlResponse, error)
+	GetOriginalUrl(context.Context, *ShortKey) (*Url, error)
 	mustEmbedUnimplementedShortUrlServer()
 }
 
@@ -83,10 +83,10 @@ type ShortUrlServer interface {
 // pointer dereference when methods are called.
 type UnimplementedShortUrlServer struct{}
 
-func (UnimplementedShortUrlServer) GetShortUrl(context.Context, *GetShortUrlRequest) (*GetShortUrlResponse, error) {
+func (UnimplementedShortUrlServer) GetShortUrl(context.Context, *Url) (*Url, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetShortUrl not implemented")
 }
-func (UnimplementedShortUrlServer) GetOriginalUrl(context.Context, *GetOriginalUrlRequest) (*GetOriginalUrlResponse, error) {
+func (UnimplementedShortUrlServer) GetOriginalUrl(context.Context, *ShortKey) (*Url, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetOriginalUrl not implemented")
 }
 func (UnimplementedShortUrlServer) mustEmbedUnimplementedShortUrlServer() {}
@@ -111,7 +111,7 @@ func RegisterShortUrlServer(s grpc.ServiceRegistrar, srv ShortUrlServer) {
 }
 
 func _ShortUrl_GetShortUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetShortUrlRequest)
+	in := new(Url)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -123,13 +123,13 @@ func _ShortUrl_GetShortUrl_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: ShortUrl_GetShortUrl_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShortUrlServer).GetShortUrl(ctx, req.(*GetShortUrlRequest))
+		return srv.(ShortUrlServer).GetShortUrl(ctx, req.(*Url))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ShortUrl_GetOriginalUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetOriginalUrlRequest)
+	in := new(ShortKey)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -141,7 +141,7 @@ func _ShortUrl_GetOriginalUrl_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: ShortUrl_GetOriginalUrl_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShortUrlServer).GetOriginalUrl(ctx, req.(*GetOriginalUrlRequest))
+		return srv.(ShortUrlServer).GetOriginalUrl(ctx, req.(*ShortKey))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -163,5 +163,5 @@ var ShortUrl_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "services/shorturl/proto/shorturl.proto",
+	Metadata: "shorturl.proto",
 }

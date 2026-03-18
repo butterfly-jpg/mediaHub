@@ -1,54 +1,30 @@
 package shorturl
 
 import (
-	"context"
 	"mediahub/pkg/config"
-	"mediahub/services"
-	"mediahub/services/shorturl/proto"
+	grpc_client_pool "mediahub/pkg/grpc-client-pool"
+	"mediahub/pkg/log"
+	"sync"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var client proto.ShortUrlClient
+var pool grpc_client_pool.ClientPool
+var once sync.Once
 
-// Init 初始化 ShortUrl gRPC 客户端，应在 main.go 中调用。
-func Init() {
-	conf := config.GetConfig()
-	conn, err := grpc.NewClient(
-		conf.DependOn.ShortUrl.Address,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		panic("shorturl: failed to connect gRPC server: " + err.Error())
+func NewShortUrlClientPool() grpc_client_pool.ClientPool {
+	var err error
+	if pool != nil {
+		return pool
 	}
-	client = proto.NewShortUrlClient(conn)
-}
-
-// GetShortUrl 根据原始 URL 生成短链接。
-func GetShortUrl(ctx context.Context, originalUrl string) (string, error) {
-	conf := config.GetConfig()
-	ctx = services.AppendBearerTokenToContext(ctx, conf.DependOn.ShortUrl.AccessToken)
-
-	resp, err := client.GetShortUrl(ctx, &proto.GetShortUrlRequest{
-		OriginalUrl: originalUrl,
+	once.Do(func() {
+		cnf := config.GetConfig()
+		pool, err = grpc_client_pool.NewPool(cnf.DependOn.ShortUrl.Address,
+			grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			log.Error(err)
+		}
 	})
-	if err != nil {
-		return "", err
-	}
-	return resp.ShortUrl, nil
-}
-
-// GetOriginalUrl 根据短链接还原原始 URL。
-func GetOriginalUrl(ctx context.Context, shortUrl string) (string, error) {
-	conf := config.GetConfig()
-	ctx = services.AppendBearerTokenToContext(ctx, conf.DependOn.ShortUrl.AccessToken)
-
-	resp, err := client.GetOriginalUrl(ctx, &proto.GetOriginalUrlRequest{
-		ShortUrl: shortUrl,
-	})
-	if err != nil {
-		return "", err
-	}
-	return resp.OriginalUrl, nil
+	return pool
 }

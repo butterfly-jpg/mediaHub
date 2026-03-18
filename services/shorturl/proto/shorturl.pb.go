@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.0
-// source: services/shorturl/proto/shorturl.proto
+// source: shorturl.proto
 
 package proto
 
@@ -21,29 +21,30 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// GetShortUrlRequest 生成短链接请求
-type GetShortUrlRequest struct {
+type Url struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	OriginalUrl   string                 `protobuf:"bytes,1,opt,name=original_url,json=originalUrl,proto3" json:"original_url,omitempty"` // 原始 URL
+	Url           string                 `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
+	UserID        int64                  `protobuf:"varint,2,opt,name=userID,proto3" json:"userID,omitempty"`
+	IsPublic      bool                   `protobuf:"varint,3,opt,name=isPublic,proto3" json:"isPublic,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetShortUrlRequest) Reset() {
-	*x = GetShortUrlRequest{}
-	mi := &file_services_shorturl_proto_shorturl_proto_msgTypes[0]
+func (x *Url) Reset() {
+	*x = Url{}
+	mi := &file_shorturl_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetShortUrlRequest) String() string {
+func (x *Url) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetShortUrlRequest) ProtoMessage() {}
+func (*Url) ProtoMessage() {}
 
-func (x *GetShortUrlRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_services_shorturl_proto_shorturl_proto_msgTypes[0]
+func (x *Url) ProtoReflect() protoreflect.Message {
+	mi := &file_shorturl_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -54,41 +55,56 @@ func (x *GetShortUrlRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetShortUrlRequest.ProtoReflect.Descriptor instead.
-func (*GetShortUrlRequest) Descriptor() ([]byte, []int) {
-	return file_services_shorturl_proto_shorturl_proto_rawDescGZIP(), []int{0}
+// Deprecated: Use Url.ProtoReflect.Descriptor instead.
+func (*Url) Descriptor() ([]byte, []int) {
+	return file_shorturl_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GetShortUrlRequest) GetOriginalUrl() string {
+func (x *Url) GetUrl() string {
 	if x != nil {
-		return x.OriginalUrl
+		return x.Url
 	}
 	return ""
 }
 
-// GetShortUrlResponse 生成短链接响应
-type GetShortUrlResponse struct {
+func (x *Url) GetUserID() int64 {
+	if x != nil {
+		return x.UserID
+	}
+	return 0
+}
+
+func (x *Url) GetIsPublic() bool {
+	if x != nil {
+		return x.IsPublic
+	}
+	return false
+}
+
+type ShortKey struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ShortUrl      string                 `protobuf:"bytes,1,opt,name=short_url,json=shortUrl,proto3" json:"short_url,omitempty"` // 生成的短链接
+	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	UserID        int64                  `protobuf:"varint,2,opt,name=userID,proto3" json:"userID,omitempty"`
+	IsPublic      bool                   `protobuf:"varint,3,opt,name=isPublic,proto3" json:"isPublic,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetShortUrlResponse) Reset() {
-	*x = GetShortUrlResponse{}
-	mi := &file_services_shorturl_proto_shorturl_proto_msgTypes[1]
+func (x *ShortKey) Reset() {
+	*x = ShortKey{}
+	mi := &file_shorturl_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetShortUrlResponse) String() string {
+func (x *ShortKey) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetShortUrlResponse) ProtoMessage() {}
+func (*ShortKey) ProtoMessage() {}
 
-func (x *GetShortUrlResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_services_shorturl_proto_shorturl_proto_msgTypes[1]
+func (x *ShortKey) ProtoReflect() protoreflect.Message {
+	mi := &file_shorturl_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -99,149 +115,71 @@ func (x *GetShortUrlResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetShortUrlResponse.ProtoReflect.Descriptor instead.
-func (*GetShortUrlResponse) Descriptor() ([]byte, []int) {
-	return file_services_shorturl_proto_shorturl_proto_rawDescGZIP(), []int{1}
+// Deprecated: Use ShortKey.ProtoReflect.Descriptor instead.
+func (*ShortKey) Descriptor() ([]byte, []int) {
+	return file_shorturl_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GetShortUrlResponse) GetShortUrl() string {
+func (x *ShortKey) GetKey() string {
 	if x != nil {
-		return x.ShortUrl
+		return x.Key
 	}
 	return ""
 }
 
-// GetOriginalUrlRequest 还原原始 URL 请求
-type GetOriginalUrlRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ShortUrl      string                 `protobuf:"bytes,1,opt,name=short_url,json=shortUrl,proto3" json:"short_url,omitempty"` // 短链接
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetOriginalUrlRequest) Reset() {
-	*x = GetOriginalUrlRequest{}
-	mi := &file_services_shorturl_proto_shorturl_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetOriginalUrlRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetOriginalUrlRequest) ProtoMessage() {}
-
-func (x *GetOriginalUrlRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_services_shorturl_proto_shorturl_proto_msgTypes[2]
+func (x *ShortKey) GetUserID() int64 {
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+		return x.UserID
 	}
-	return mi.MessageOf(x)
+	return 0
 }
 
-// Deprecated: Use GetOriginalUrlRequest.ProtoReflect.Descriptor instead.
-func (*GetOriginalUrlRequest) Descriptor() ([]byte, []int) {
-	return file_services_shorturl_proto_shorturl_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *GetOriginalUrlRequest) GetShortUrl() string {
+func (x *ShortKey) GetIsPublic() bool {
 	if x != nil {
-		return x.ShortUrl
+		return x.IsPublic
 	}
-	return ""
+	return false
 }
 
-// GetOriginalUrlResponse 还原原始 URL 响应
-type GetOriginalUrlResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	OriginalUrl   string                 `protobuf:"bytes,1,opt,name=original_url,json=originalUrl,proto3" json:"original_url,omitempty"` // 原始 URL
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
+var File_shorturl_proto protoreflect.FileDescriptor
 
-func (x *GetOriginalUrlResponse) Reset() {
-	*x = GetOriginalUrlResponse{}
-	mi := &file_services_shorturl_proto_shorturl_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetOriginalUrlResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetOriginalUrlResponse) ProtoMessage() {}
-
-func (x *GetOriginalUrlResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_services_shorturl_proto_shorturl_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetOriginalUrlResponse.ProtoReflect.Descriptor instead.
-func (*GetOriginalUrlResponse) Descriptor() ([]byte, []int) {
-	return file_services_shorturl_proto_shorturl_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *GetOriginalUrlResponse) GetOriginalUrl() string {
-	if x != nil {
-		return x.OriginalUrl
-	}
-	return ""
-}
-
-var File_services_shorturl_proto_shorturl_proto protoreflect.FileDescriptor
-
-const file_services_shorturl_proto_shorturl_proto_rawDesc = "" +
+const file_shorturl_proto_rawDesc = "" +
 	"\n" +
-	"&services/shorturl/proto/shorturl.proto\x12\bshorturl\"7\n" +
-	"\x12GetShortUrlRequest\x12!\n" +
-	"\foriginal_url\x18\x01 \x01(\tR\voriginalUrl\"2\n" +
-	"\x13GetShortUrlResponse\x12\x1b\n" +
-	"\tshort_url\x18\x01 \x01(\tR\bshortUrl\"4\n" +
-	"\x15GetOriginalUrlRequest\x12\x1b\n" +
-	"\tshort_url\x18\x01 \x01(\tR\bshortUrl\";\n" +
-	"\x16GetOriginalUrlResponse\x12!\n" +
-	"\foriginal_url\x18\x01 \x01(\tR\voriginalUrl2\xab\x01\n" +
-	"\bShortUrl\x12J\n" +
-	"\vGetShortUrl\x12\x1c.shorturl.GetShortUrlRequest\x1a\x1d.shorturl.GetShortUrlResponse\x12S\n" +
-	"\x0eGetOriginalUrl\x12\x1f.shorturl.GetOriginalUrlRequest\x1a .shorturl.GetOriginalUrlResponseB\"Z mediahub/services/shorturl/protob\x06proto3"
+	"\x0eshorturl.proto\x12\bshorturl\"K\n" +
+	"\x03Url\x12\x10\n" +
+	"\x03url\x18\x01 \x01(\tR\x03url\x12\x16\n" +
+	"\x06userID\x18\x02 \x01(\x03R\x06userID\x12\x1a\n" +
+	"\bisPublic\x18\x03 \x01(\bR\bisPublic\"P\n" +
+	"\bShortKey\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x16\n" +
+	"\x06userID\x18\x02 \x01(\x03R\x06userID\x12\x1a\n" +
+	"\bisPublic\x18\x03 \x01(\bR\bisPublic2l\n" +
+	"\bShortUrl\x12+\n" +
+	"\vGetShortUrl\x12\r.shorturl.Url\x1a\r.shorturl.Url\x123\n" +
+	"\x0eGetOriginalUrl\x12\x12.shorturl.ShortKey\x1a\r.shorturl.UrlB\"Z mediahub/services/shorturl/protob\x06proto3"
 
 var (
-	file_services_shorturl_proto_shorturl_proto_rawDescOnce sync.Once
-	file_services_shorturl_proto_shorturl_proto_rawDescData []byte
+	file_shorturl_proto_rawDescOnce sync.Once
+	file_shorturl_proto_rawDescData []byte
 )
 
-func file_services_shorturl_proto_shorturl_proto_rawDescGZIP() []byte {
-	file_services_shorturl_proto_shorturl_proto_rawDescOnce.Do(func() {
-		file_services_shorturl_proto_shorturl_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_services_shorturl_proto_shorturl_proto_rawDesc), len(file_services_shorturl_proto_shorturl_proto_rawDesc)))
+func file_shorturl_proto_rawDescGZIP() []byte {
+	file_shorturl_proto_rawDescOnce.Do(func() {
+		file_shorturl_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_shorturl_proto_rawDesc), len(file_shorturl_proto_rawDesc)))
 	})
-	return file_services_shorturl_proto_shorturl_proto_rawDescData
+	return file_shorturl_proto_rawDescData
 }
 
-var file_services_shorturl_proto_shorturl_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_services_shorturl_proto_shorturl_proto_goTypes = []any{
-	(*GetShortUrlRequest)(nil),     // 0: shorturl.GetShortUrlRequest
-	(*GetShortUrlResponse)(nil),    // 1: shorturl.GetShortUrlResponse
-	(*GetOriginalUrlRequest)(nil),  // 2: shorturl.GetOriginalUrlRequest
-	(*GetOriginalUrlResponse)(nil), // 3: shorturl.GetOriginalUrlResponse
+var file_shorturl_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_shorturl_proto_goTypes = []any{
+	(*Url)(nil),      // 0: shorturl.Url
+	(*ShortKey)(nil), // 1: shorturl.ShortKey
 }
-var file_services_shorturl_proto_shorturl_proto_depIdxs = []int32{
-	0, // 0: shorturl.ShortUrl.GetShortUrl:input_type -> shorturl.GetShortUrlRequest
-	2, // 1: shorturl.ShortUrl.GetOriginalUrl:input_type -> shorturl.GetOriginalUrlRequest
-	1, // 2: shorturl.ShortUrl.GetShortUrl:output_type -> shorturl.GetShortUrlResponse
-	3, // 3: shorturl.ShortUrl.GetOriginalUrl:output_type -> shorturl.GetOriginalUrlResponse
+var file_shorturl_proto_depIdxs = []int32{
+	0, // 0: shorturl.ShortUrl.GetShortUrl:input_type -> shorturl.Url
+	1, // 1: shorturl.ShortUrl.GetOriginalUrl:input_type -> shorturl.ShortKey
+	0, // 2: shorturl.ShortUrl.GetShortUrl:output_type -> shorturl.Url
+	0, // 3: shorturl.ShortUrl.GetOriginalUrl:output_type -> shorturl.Url
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -249,26 +187,26 @@ var file_services_shorturl_proto_shorturl_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_services_shorturl_proto_shorturl_proto_init() }
-func file_services_shorturl_proto_shorturl_proto_init() {
-	if File_services_shorturl_proto_shorturl_proto != nil {
+func init() { file_shorturl_proto_init() }
+func file_shorturl_proto_init() {
+	if File_shorturl_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_services_shorturl_proto_shorturl_proto_rawDesc), len(file_services_shorturl_proto_shorturl_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_shorturl_proto_rawDesc), len(file_shorturl_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_services_shorturl_proto_shorturl_proto_goTypes,
-		DependencyIndexes: file_services_shorturl_proto_shorturl_proto_depIdxs,
-		MessageInfos:      file_services_shorturl_proto_shorturl_proto_msgTypes,
+		GoTypes:           file_shorturl_proto_goTypes,
+		DependencyIndexes: file_shorturl_proto_depIdxs,
+		MessageInfos:      file_shorturl_proto_msgTypes,
 	}.Build()
-	File_services_shorturl_proto_shorturl_proto = out.File
-	file_services_shorturl_proto_shorturl_proto_goTypes = nil
-	file_services_shorturl_proto_shorturl_proto_depIdxs = nil
+	File_shorturl_proto = out.File
+	file_shorturl_proto_goTypes = nil
+	file_shorturl_proto_depIdxs = nil
 }

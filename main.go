@@ -3,13 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"mediahub/controller"
 	"mediahub/middleware"
 	"mediahub/pkg/config"
+	"mediahub/pkg/log"
 	"mediahub/pkg/storage/cos"
 	"mediahub/routers"
-	"mediahub/services/shorturl"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,10 +24,19 @@ func main() {
 	// 初始化配置文件
 	config.InitConfig(*configFile)
 	cnf := config.GetConfig()
-	shorturl.Init()
+
+	log.SetLevel(cnf.Log.Level)
+	log.SetOutput(log.GetRotateWriter(cnf.Log.LogPath))
+	log.SetPrintCaller(true)
+
+	logger := log.NewLogger()
+	logger.SetLevel(cnf.Log.Level)
+	logger.SetOutput(log.GetRotateWriter(cnf.Log.LogPath))
+	logger.SetPrintCaller(true)
+
 	// 初始化cos
 	os := cos.NewCosStorage(cnf.Cos.BucketUrl, cnf.Cos.SecretId, cnf.Cos.SecretKey, cnf.Cos.CDNDomain)
-	c := controller.NewController(os)
+	c := controller.NewController(os, logger, cnf)
 
 	// 启动应用程序
 	gin.SetMode(cnf.Server.Mode)
